@@ -79,18 +79,31 @@
     font-size: 12px;
   }
 
-  .checkbox-group label {
-    background: #333;
-    padding: 8px 12px;
-    border-radius: 6px;
-    color: #f4f1ed;
-    border: 1px solid #444;
-    transition: 0.2s;
-  }
+.checkbox-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+}
 
-  .checkbox-group input[type="checkbox"] {
-    accent-color: #c5a85b;
-  }
+.checkbox-group label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background-color: #333;
+  color: #eee;
+  padding: 6px 10px;
+  border-radius: 20px;
+  font-size: 13px;
+  cursor: pointer;
+  border: 1px solid #555;
+  transition: background 0.2s;
+}
+
+.checkbox-group input[type="checkbox"] {
+  accent-color: #d4af37; /* Gold tone to match your design */
+}
+
 </style>
 
 </head>
