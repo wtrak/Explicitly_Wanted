@@ -96,7 +96,7 @@ function populateTags() {
 }
 
 async function fetchListings() {
-  const { data, error } = await supabase
+  const { data, error } = await client
     .from("posts")
     .select("*")
     .eq("status", "Active")
@@ -132,6 +132,7 @@ async function fetchListings() {
     container.appendChild(card);
   });
 }
+
   
 function toggleContact(index) {
   const el = document.getElementById(`contact-${index}`);
