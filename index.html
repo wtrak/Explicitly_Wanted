@@ -3,19 +3,96 @@
 <head>
   <title>Explicitly Wanted</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
-  <style>
-    body { font-family: Arial, sans-serif; padding: 20px; background: #f9f9f9; }
-    h1 { margin-top: 0; }
-    .card { background: #fff; padding: 15px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 5px; }
-    .tags { margin-top: 10px; }
-    .tag { display: inline-block; background: #eee; padding: 5px 10px; margin: 3px; border-radius: 3px; font-size: 12px; }
-    .button { background: black; color: white; padding: 10px 20px; border: none; cursor: pointer; margin-bottom: 30px; }
-    .form-section { background: #fff; padding: 20px; border-radius: 5px; border: 1px solid #ccc; margin-top: 50px; }
-    label { display: block; margin-top: 10px; }
-    input, select, textarea { width: 100%; padding: 8px; margin-top: 5px; }
-    .checkbox-group { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; }
-    .checkbox-group label { display: flex; align-items: center; gap: 5px; font-size: 14px; }
-  </style>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+
+<style>
+  body {
+    font-family: 'Poppins', sans-serif;
+    background-color: #1e1c17;
+    color: #f4f1ed;
+    padding: 20px;
+  }
+
+  h1, h2 {
+    color: #f4f1ed;
+    font-weight: 600;
+  }
+
+  .card {
+    background: #2a2a2a;
+    color: #f4f1ed;
+    padding: 15px;
+    margin-bottom: 15px;
+    border-radius: 10px;
+    border: 1px solid #3a3a3a;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  }
+
+  .button {
+    background: #c5a85b;
+    color: #1e1c17;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+
+  .button:hover {
+    background: #d6b769;
+  }
+
+  .form-section {
+    background: #2a2a2a;
+    padding: 25px;
+    border-radius: 10px;
+    border: 1px solid #3a3a3a;
+    margin-top: 50px;
+  }
+
+  input, select, textarea {
+    width: 100%;
+    padding: 10px;
+    margin-top: 5px;
+    margin-bottom: 15px;
+    background: #1e1c17;
+    border: 1px solid #3a3a3a;
+    color: #f4f1ed;
+    border-radius: 6px;
+  }
+
+  label {
+    font-size: 14px;
+    color: #d8d6d2;
+    margin-top: 10px;
+    display: block;
+  }
+
+  .tag {
+    display: inline-block;
+    background: #3c3c3c;
+    color: #f4f1ed;
+    padding: 5px 12px;
+    margin: 3px;
+    border-radius: 20px;
+    font-size: 12px;
+  }
+
+  .checkbox-group label {
+    background: #333;
+    padding: 8px 12px;
+    border-radius: 6px;
+    color: #f4f1ed;
+    border: 1px solid #444;
+    transition: 0.2s;
+  }
+
+  .checkbox-group input[type="checkbox"] {
+    accent-color: #c5a85b;
+  }
+</style>
+
 </head>
 <body>
 
