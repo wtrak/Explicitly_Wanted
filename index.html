@@ -1,158 +1,158 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Explicitly Wanted</title>
+  <meta charset="UTF-8">
+  <title>Classifieds</title>
   <style>
-    body { font-family: Arial, sans-serif; padding: 20px; background: #f9f9f9; }
-    h1 { margin-top: 0; }
-    .card { background: #fff; padding: 15px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 5px; }
-    .tags { margin-top: 10px; }
-    .tag { display: inline-block; background: #eee; padding: 5px 10px; margin: 3px; border-radius: 3px; font-size: 12px; }
-    .button { background: black; color: white; padding: 10px 20px; border: none; cursor: pointer; margin-bottom: 30px; }
-    .form-section { background: #fff; padding: 20px; border-radius: 5px; border: 1px solid #ccc; margin-top: 50px; }
-    label { display: block; margin-top: 10px; }
-    input, select, textarea { width: 100%; padding: 8px; margin-top: 5px; }
+    body {
+      font-family: sans-serif;
+      margin: 2rem;
+      background: #f9f9f9;
+    }
+    h1 {
+      text-align: center;
+    }
+    .filters, .listing {
+      margin: 1rem auto;
+      max-width: 800px;
+    }
+    .filters select {
+      margin: 0.5rem;
+      padding: 0.3rem;
+    }
+    .listing {
+      border: 1px solid #ccc;
+      padding: 1rem;
+      background: #fff;
+      margin-bottom: 1rem;
+      border-radius: 6px;
+    }
+    .post-btn {
+      display: block;
+      width: 200px;
+      margin: 1rem auto;
+      padding: 0.5rem;
+      background: black;
+      color: white;
+      text-align: center;
+      text-decoration: none;
+      border-radius: 6px;
+    }
   </style>
 </head>
 <body>
+  <h1>Classified Listings</h1>
 
-  <h1>Explicitly Wanted</h1>
-  <button class="button" onclick="document.getElementById('form-section').scrollIntoView({ behavior: 'smooth' });">Post a Request</button>
+  <div class="filters">
+    <select id="hairColorFilter">
+      <option value="">Hair Color</option>
+      <option>Blonde</option><option>Brunette</option><option>Black</option><option>Red</option>
+      <option>Yellow</option><option>Orange</option><option>Pink</option><option>Blue</option>
+      <option>Purple</option><option>Green</option>
+    </select>
 
-  <div id="listings">Loading posts...</div>
+    <select id="bodyTypeFilter">
+      <option value="">Body Type</option>
+      <option>Thin</option><option>Toned</option><option>Full Figured</option><option>Petite</option>
+    </select>
 
-  <div class="form-section" id="form-section">
-    <h2>Submit a New Request</h2>
-    <p><strong>Send exactly 1 USDT (TRC20)</strong> to: <code>TGW56spanMC3ywvMh5JPP3Dkd3BzjuemHy</code></p>
-    <p>⚠️ You must include enough for fees. Posts will only unlock if the transaction is exactly 1 USDT. No refunds.</p>
-    <label for="txid">Transaction ID:</label>
-    <input type="text" id="txid" placeholder="Paste your TXID here">
+    <select id="ethnicityFilter">
+      <option value="">Ethnicity</option>
+      <option>White</option><option>Mediterranean</option><option>Asian</option><option>Black</option>
+      <option>Latina</option><option>Middle Eastern</option><option>Mixed</option>
+    </select>
 
-    <form id="postForm" onsubmit="submitPost(event)">
-      <label>Title:<input type="text" id="title" required></label>
-      <label>Description:<textarea id="description" required></textarea></label>
-      <label>Budget:<input type="number" id="budget" required></label>
-      <label>Email:<input type="email" id="email" required></label>
-      <label>Phone:<input type="tel" id="phone" required></label>
-      <label>Hair Color:
-        <select id="hair">
-          <option>Blonde</option><option>Brunette</option><option>Black</option><option>Red</option><option>Other</option>
-        </select>
-      </label>
-      <label>Body Type:
-        <select id="body">
-          <option>Petite</option><option>Curvy</option><option>Athletic</option><option>Slim</option>
-        </select>
-      </label>
-      <label>Ethnicity:
-        <select id="ethnicity">
-          <option>White</option><option>Black</option><option>Latina</option><option>Asian</option><option>Mixed</option><option>Other</option>
-        </select>
-      </label>
-      <label>Tags (comma separated):<input type="text" id="tags"></label>
-      <button type="submit">Submit Post</button>
-    </form>
-    <p id="formMessage"></p>
+    <select id="tagFilter">
+      <option value="">Tag</option>
+      <option>Naughty</option><option>Sweet</option><option>Playful</option><option>Submissive</option>
+      <option>Dominant</option><option>Bold</option><option>Shy</option><option>Flirty</option>
+      <option>Lingerie</option><option>Oil Play</option><option>Toys</option><option>Foot Play</option>
+      <option>Teasing</option><option>JOI</option><option>Dirty Talk</option><option>Dancing</option>
+      <option>Striptease</option><option>Shower</option><option>Cosplay</option><option>Dom/Sub</option>
+      <option>Kinky</option><option>Fetish</option><option>Rough</option><option>Romantic</option>
+      <option>Realistic</option><option>POV</option><option>Roleplay</option>
+    </select>
   </div>
 
+  <a href="post.html" class="post-btn">Post a Listing</a>
+
+  <div id="listings"></div>
+
   <script>
+    const databaseId = "22c5d91a97a78073995ce60206b0da08";
+    const notionToken = "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";
+
     async function fetchListings() {
-      const response = await fetch("https://api.notion.com/v1/databases/22c5d91a97a78073995ce60206b0da08/query", {
+      const res = await fetch("https://api.notion.com/v1/databases/" + databaseId + "/query", {
         method: "POST",
         headers: {
-          "Authorization": "Bearer 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",
+          "Authorization": `Bearer ${notionToken}`,
           "Content-Type": "application/json",
           "Notion-Version": "2022-06-28"
         },
         body: JSON.stringify({
-          "filter": {
-            "property": "Status",
-            "select": { "equals": "Active" }
+          filter: {
+            property: "Status",
+            select: { equals: "Active" }
           }
         })
       });
 
-      const data = await response.json();
-      const container = document.getElementById("listings");
-      container.innerHTML = "";
+      const data = await res.json();
+      return data.results;
+    }
 
-      data.results.forEach(page => {
-        const props = page.properties;
-        const title = props.Title?.title[0]?.plain_text || "No Title";
-        const desc = props.Description?.rich_text[0]?.plain_text || "No Description";
-        const budget = props.Budget?.number ? `$${props.Budget.number}` : "No Budget";
-        const tags = props.Tags?.multi_select?.map(t => `<span class='tag'>${t.name}</span>`).join("") || "";
+    function displayListings(entries) {
+      const container = document.getElementById('listings');
+      container.innerHTML = '';
+      entries.forEach(entry => {
+        const title = entry.properties.Title?.title[0]?.text?.content || '';
+        const desc = entry.properties.Description?.rich_text[0]?.text?.content || '';
+        const tags = entry.properties.Tags?.multi_select.map(t => t.name).join(", ");
+        const hair = entry.properties["Hair Color"]?.select?.name || '';
+        const body = entry.properties["Body Type"]?.select?.name || '';
+        const eth = entry.properties.Ethnicity?.select?.name || '';
 
-        const card = document.createElement("div");
-        card.className = "card";
-        card.innerHTML = `<strong>${title}</strong><br><small>${budget}</small><p>${desc}</p><div class="tags">${tags}</div>`;
-        container.appendChild(card);
+        const el = document.createElement("div");
+        el.className = "listing";
+        el.innerHTML = `
+          <h3>${title}</h3>
+          <p>${desc}</p>
+          <p><strong>Hair:</strong> ${hair} | <strong>Body:</strong> ${body} | <strong>Ethnicity:</strong> ${eth}</p>
+          <p><strong>Tags:</strong> ${tags}</p>
+        `;
+        container.appendChild(el);
       });
     }
 
-    async function submitPost(event) {
-      event.preventDefault();
-      const txid = document.getElementById("txid").value;
-      const resultBox = document.getElementById("formMessage");
-      resultBox.textContent = "Verifying transaction...";
+    async function applyFilters() {
+      const all = await fetchListings();
+      const hair = document.getElementById("hairColorFilter").value;
+      const body = document.getElementById("bodyTypeFilter").value;
+      const eth = document.getElementById("ethnicityFilter").value;
+      const tag = document.getElementById("tagFilter").value;
 
-      // Check TRX TX
-      const res = await fetch("https://go.getblock.us/f579c1dc4ff34d559c1aae60bac442d3", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          jsonrpc: "2.0",
-          id: 1,
-          method: "eth_getTransactionByHash",
-          params: [txid]
-        })
-      });
-      const json = await res.json();
-      const to = json?.result?.to?.toLowerCase();
-      const amount = parseInt(json?.result?.value, 16) / 1e6;
-
-      if (to !== "0xf1d3e38560722a71234860cfd68b898fb2ecae4a" && amount !== 1) {
-        resultBox.textContent = "Invalid transaction. Post not accepted.";
-        return;
-      }
-
-      const data = {
-        parent: { database_id: "22c5d91a97a78073995ce60206b0da08" },
-        properties: {
-          "Title": { "title": [{ "text": { "content": document.getElementById("title").value } }] },
-          "Description": { "rich_text": [{ "text": { "content": document.getElementById("description").value } }] },
-          "Budget": { "number": parseFloat(document.getElementById("budget").value) },
-          "Email": { "email": document.getElementById("email").value },
-          "Phone": { "phone_number": document.getElementById("phone").value },
-          "Status": { "select": { "name": "Active" } },
-          "Hair Color": { "select": { "name": document.getElementById("hair").value } },
-          "Body Type": { "select": { "name": document.getElementById("body").value } },
-          "Ethnicity": { "select": { "name": document.getElementById("ethnicity").value } },
-          "Tags": {
-            "multi_select": document.getElementById("tags").value.split(",").map(tag => ({ name: tag.trim() }))
-          }
-        }
-      };
-
-      const notionRes = await fetch("https://api.notion.com/v1/pages", {
-        method: "POST",
-        headers: {
-          "Authorization": "Bearer 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",
-          "Content-Type": "application/json",
-          "Notion-Version": "2022-06-28"
-        },
-        body: JSON.stringify(data)
+      const filtered = all.filter(entry => {
+        const props = entry.properties;
+        const h = props["Hair Color"]?.select?.name;
+        const b = props["Body Type"]?.select?.name;
+        const e = props["Ethnicity"]?.select?.name;
+        const t = props.Tags?.multi_select.map(t => t.name);
+        return (!hair || h === hair) &&
+               (!body || b === body) &&
+               (!eth || e === eth) &&
+               (!tag || (t && t.includes(tag)));
       });
 
-      if (notionRes.ok) {
-        resultBox.textContent = "Post submitted successfully!";
-        document.getElementById("postForm").reset();
-      } else {
-        resultBox.textContent = "Post failed to submit.";
-      }
+      displayListings(filtered);
     }
 
-    fetchListings();
+    document.querySelectorAll("select").forEach(sel => {
+      sel.addEventListener("change", applyFilters);
+    });
+
+    fetchListings().then(displayListings);
   </script>
 </body>
 </html>
+
