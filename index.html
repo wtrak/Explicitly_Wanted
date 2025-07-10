@@ -96,7 +96,7 @@ function populateTags() {
 }
 
 async function fetchListings() {
-  const { data, error } = await client
+  const { data, error } = await supabase
     .from("posts")
     .select("*")
     .eq("status", "Active")
@@ -111,18 +111,37 @@ async function fetchListings() {
     return;
   }
 
-  data.forEach(post => {
+  data.forEach((post, index) => {
     const card = document.createElement("div");
     card.className = "card";
+
+    const tagHtml = (post.tags || []).map(t => `<span class='tag'>${t}</span>`).join("");
+
     card.innerHTML = `
       <strong>${post.title}</strong><br>
       <small>$${post.budget}</small>
       <p>${post.description}</p>
-      <div class="tags">${(post.tags || []).map(t => `<span class='tag'>${t}</span>`).join("")}</div>
+      <div class="tags">${tagHtml}</div>
+      <button onclick="toggleContact(${index})" class="button">Show Contact Info</button>
+      <div id="contact-${index}" style="display:none; margin-top:10px;">
+        <p><strong>Email:</strong> ${post.email}</p>
+        <p><strong>Phone:</strong> ${post.phone}</p>
+      </div>
     `;
+
     container.appendChild(card);
   });
 }
+  
+function toggleContact(index) {
+  const el = document.getElementById(`contact-${index}`);
+  if (el.style.display === "none") {
+    el.style.display = "block";
+  } else {
+    el.style.display = "none";
+  }
+}
+
 
 async function submitPost(e) {
   e.preventDefault();
