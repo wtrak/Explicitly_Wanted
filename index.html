@@ -128,27 +128,11 @@ async function submitPost(e) {
   e.preventDefault();
   const resultBox = document.getElementById("formMessage");
   resultBox.textContent = "Verifying payment...";
+resultBox.textContent = "Skipping payment verification for testing...";
 
-  const txid = document.getElementById("txid").value.trim();
-  const res = await fetch(getblockEndpoint, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      jsonrpc: "2.0",
-      id: 1,
-      method: "eth_getTransactionByHash",
-      params: [txid]
-    })
-  });
+// Simulate successful payment check
+const txid = "TEST_TXID";
 
-  const json = await res.json();
-  const to = json?.result?.to?.toLowerCase();
-  const amount = parseInt(json?.result?.value, 16) / 1e6;
-
-  if (to !== walletHex || amount !== 1) {
-    resultBox.textContent = "Invalid or incomplete payment.";
-    return;
-  }
 
   const tags = Array.from(document.querySelectorAll('input[name="tags"]:checked')).map(cb => cb.value);
 
