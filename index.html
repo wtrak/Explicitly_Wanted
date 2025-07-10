@@ -1,4 +1,4 @@
-
+<!-- UPDATED index.html -->
 <!DOCTYPE html>
 <html>
 <head>
@@ -38,20 +38,34 @@
 
     <label>Hair Color:
       <select id="hair">
-        <option>Blonde</option><option>Brunette</option><option>Black</option><option>Red</option><option>Other</option>
+        <option>Blonde</option><option>Brunette</option><option>Black</option><option>Red</option>
+        <option>Yellow</option><option>Orange</option><option>Pink</option><option>Blue</option>
+        <option>Purple</option><option>Green</option>
       </select>
     </label>
     <label>Body Type:
       <select id="body">
-        <option>Petite</option><option>Curvy</option><option>Athletic</option><option>Slim</option>
+        <option>Thin</option><option>Toned</option><option>Full Figured</option><option>Petite</option>
       </select>
     </label>
     <label>Ethnicity:
       <select id="ethnicity">
-        <option>White</option><option>Black</option><option>Latina</option><option>Asian</option><option>Mixed</option><option>Other</option>
+        <option>White</option><option>Mediterranean</option><option>Asian</option><option>Black</option>
+        <option>Latina</option><option>Middle Eastern</option><option>Mixed</option>
       </select>
     </label>
-    <label>Tags:<select id="tags" multiple size="8"></select></label>
+
+    <label>Tags:
+      <select id="tags" multiple size="12">
+        <option>Naughty</option><option>Sweet</option><option>Playful</option><option>Submissive</option>
+        <option>Dominant</option><option>Bold</option><option>Shy</option><option>Flirty</option>
+        <option>Lingerie</option><option>Oil Play</option><option>Toys</option><option>Foot Play</option>
+        <option>Teasing</option><option>JOI</option><option>Dirty Talk</option><option>Dancing</option>
+        <option>Striptease</option><option>Shower</option><option>Cosplay</option><option>Dom/Sub</option>
+        <option>Kinky</option><option>Fetish</option><option>Rough</option><option>Romantic</option>
+        <option>Realistic</option><option>POV</option><option>Roleplay</option>
+      </select>
+    </label>
 
     <button type="submit">Submit Post</button>
   </form>
@@ -63,21 +77,6 @@ const notionToken = "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";
 const notionDbId = "22c5d91a97a78073995ce60206b0da08";
 const getblockEndpoint = "https://go.getblock.us/f579c1dc4ff34d559c1aae60bac442d3";
 const walletHex = "0xf1d3e38560722a71234860cfd68b898fb2ecae4a";
-
-const TAG_OPTIONS = [
-  "Solo", "Couple", "Amateur", "GFE", "Fetish", "Cosplay", "Public", "Foot", "POV", "MILF",
-  "Teen (18+)", "Outdoor", "Voyeur", "First-Person", "Nude", "Dirty Talk", "Roleplay", "Feet", "Toys", "Custom Script"
-];
-
-function populateTags() {
-  const tagSelect = document.getElementById("tags");
-  TAG_OPTIONS.forEach(tag => {
-    const opt = document.createElement("option");
-    opt.value = tag;
-    opt.textContent = tag;
-    tagSelect.appendChild(opt);
-  });
-}
 
 async function fetchListings() {
   const res = await fetch(`https://api.notion.com/v1/databases/${notionDbId}/query`, {
@@ -167,7 +166,6 @@ async function submitPost(e) {
   }
 }
 
-populateTags();
 fetchListings();
 </script>
 </body>
