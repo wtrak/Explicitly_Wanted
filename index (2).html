@@ -1,0 +1,174 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Explicitly Wanted</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; background: #f9f9f9; }
+    h1 { margin-top: 0; }
+    .card { background: #fff; padding: 15px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 5px; }
+    .tags { margin-top: 10px; }
+    .tag { display: inline-block; background: #eee; padding: 5px 10px; margin: 3px; border-radius: 3px; font-size: 12px; }
+    .button { background: black; color: white; padding: 10px 20px; border: none; cursor: pointer; margin-bottom: 30px; }
+    .form-section { background: #fff; padding: 20px; border-radius: 5px; border: 1px solid #ccc; margin-top: 50px; }
+    label { display: block; margin-top: 10px; }
+    input, select, textarea { width: 100%; padding: 8px; margin-top: 5px; }
+  </style>
+</head>
+<body>
+
+<h1>Explicitly Wanted</h1>
+<button class="button" onclick="document.getElementById('form-section').scrollIntoView({ behavior: 'smooth' });">Post a Request</button>
+
+<div id="listings">Loading posts...</div>
+
+<div class="form-section" id="form-section">
+  <h2>Submit a New Request</h2>
+  <p><strong>Send exactly 1 USDT (TRC20)</strong> to: <code>TGW56spanMC3ywvMh5JPP3Dkd3BzjuemHy</code></p>
+  <p>⚠️ Make sure to include fees. Only exact 1 USDT will unlock posting. No refunds.</p>
+  <label for="txid">Transaction ID:</label>
+  <input type="text" id="txid" placeholder="Paste your TXID here">
+
+  <form id="postForm" onsubmit="submitPost(event)">
+    <label>Title:<input type="text" id="title" required></label>
+    <label>Description:<textarea id="description" required></textarea></label>
+    <label>Budget:<input type="number" id="budget" required></label>
+    <label>Email:<input type="email" id="email" required></label>
+    <label>Phone:<input type="tel" id="phone" required></label>
+
+    <label>Hair Color:
+      <select id="hair">
+        <option>Blonde</option><option>Brunette</option><option>Black</option><option>Red</option><option>Other</option>
+      </select>
+    </label>
+    <label>Body Type:
+      <select id="body">
+        <option>Petite</option><option>Curvy</option><option>Athletic</option><option>Slim</option>
+      </select>
+    </label>
+    <label>Ethnicity:
+      <select id="ethnicity">
+        <option>White</option><option>Black</option><option>Latina</option><option>Asian</option><option>Mixed</option><option>Other</option>
+      </select>
+    </label>
+    <label>Tags:<select id="tags" multiple size="8"></select></label>
+
+    <button type="submit">Submit Post</button>
+  </form>
+  <p id="formMessage"></p>
+</div>
+
+<script>
+const notionToken = "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";
+const notionDbId = "22c5d91a97a78073995ce60206b0da08";
+const getblockEndpoint = "https://go.getblock.us/f579c1dc4ff34d559c1aae60bac442d3";
+const walletHex = "0xf1d3e38560722a71234860cfd68b898fb2ecae4a";
+
+const TAG_OPTIONS = [
+  "Solo", "Couple", "Amateur", "GFE", "Fetish", "Cosplay", "Public", "Foot", "POV", "MILF",
+  "Teen (18+)", "Outdoor", "Voyeur", "First-Person", "Nude", "Dirty Talk", "Roleplay", "Feet", "Toys", "Custom Script"
+];
+
+function populateTags() {
+  const tagSelect = document.getElementById("tags");
+  TAG_OPTIONS.forEach(tag => {
+    const opt = document.createElement("option");
+    opt.value = tag;
+    opt.textContent = tag;
+    tagSelect.appendChild(opt);
+  });
+}
+
+async function fetchListings() {
+  const res = await fetch(`https://api.notion.com/v1/databases/${notionDbId}/query`, {
+    method: "POST",
+    headers: {
+      "Authorization": `Bearer ${notionToken}`,
+      "Content-Type": "application/json",
+      "Notion-Version": "2022-06-28"
+    },
+    body: JSON.stringify({ filter: { property: "Status", select: { equals: "Active" }}})
+  });
+  const data = await res.json();
+  const container = document.getElementById("listings");
+  container.innerHTML = "";
+  data.results.forEach(page => {
+    const p = page.properties;
+    const title = p.Title?.title?.[0]?.plain_text || "No Title";
+    const desc = p.Description?.rich_text?.[0]?.plain_text || "No Description";
+    const budget = p.Budget?.number ? `$${p.Budget.number}` : "No Budget";
+    const tags = p.Tags?.multi_select?.map(t => `<span class='tag'>${t.name}</span>`).join("") || "";
+    const card = document.createElement("div");
+    card.className = "card";
+    card.innerHTML = `<strong>${title}</strong><br><small>${budget}</small><p>${desc}</p><div class="tags">${tags}</div>`;
+    container.appendChild(card);
+  });
+}
+
+async function submitPost(e) {
+  e.preventDefault();
+  const resultBox = document.getElementById("formMessage");
+  resultBox.textContent = "Verifying payment...";
+
+  const txid = document.getElementById("txid").value.trim();
+  const res = await fetch(getblockEndpoint, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      jsonrpc: "2.0",
+      id: 1,
+      method: "eth_getTransactionByHash",
+      params: [txid]
+    })
+  });
+
+  const json = await res.json();
+  const to = json?.result?.to?.toLowerCase();
+  const amount = parseInt(json?.result?.value, 16) / 1e6;
+
+  if (to !== walletHex || amount !== 1) {
+    resultBox.textContent = "Invalid or incomplete payment.";
+    return;
+  }
+
+  const tags = Array.from(document.getElementById("tags").selectedOptions).map(o => ({ name: o.value }));
+
+  const data = {
+    parent: { database_id: notionDbId },
+    properties: {
+      "Title": { "title": [{ "text": { "content": document.getElementById("title").value } }] },
+      "Description": { "rich_text": [{ "text": { "content": document.getElementById("description").value } }] },
+      "Budget": { "number": parseFloat(document.getElementById("budget").value) },
+      "Email": { "email": document.getElementById("email").value },
+      "Phone": { "phone_number": document.getElementById("phone").value },
+      "Status": { "select": { "name": "Active" } },
+      "Hair Color": { "select": { "name": document.getElementById("hair").value } },
+      "Body Type": { "select": { "name": document.getElementById("body").value } },
+      "Ethnicity": { "select": { "name": document.getElementById("ethnicity").value } },
+      "Tags": { "multi_select": tags }
+    }
+  };
+
+  const notionRes = await fetch("https://api.notion.com/v1/pages", {
+    method: "POST",
+    headers: {
+      "Authorization": `Bearer ${notionToken}`,
+      "Content-Type": "application/json",
+      "Notion-Version": "2022-06-28"
+    },
+    body: JSON.stringify(data)
+  });
+
+  if (notionRes.ok) {
+    resultBox.textContent = "Post submitted successfully!";
+    document.getElementById("postForm").reset();
+  } else {
+    resultBox.textContent = "Failed to submit post.";
+  }
+}
+
+populateTags();
+fetchListings();
+</script>
+</body>
+</html>
