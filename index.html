@@ -98,12 +98,14 @@ async function fetchListings() {
       "Authorization": `Bearer ${notionToken}`,
       "Content-Type": "application/json",
       "Notion-Version": "2022-06-28"
-    },
-    body: JSON.stringify({ filter: { property: "Status", select: { equals: "Active" }}})
+    }
+    // removed the body filter
   });
+
   const data = await res.json();
   const container = document.getElementById("listings");
   container.innerHTML = "";
+
   data.results.forEach(page => {
     const p = page.properties;
     const title = p.Title?.title?.[0]?.plain_text || "No Title";
@@ -116,6 +118,7 @@ async function fetchListings() {
     container.appendChild(card);
   });
 }
+
 
 async function submitPost(e) {
   e.preventDefault();
