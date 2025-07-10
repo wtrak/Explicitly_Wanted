@@ -104,6 +104,13 @@ async function fetchListings() {
   const data = await res.json();
   const container = document.getElementById("listings");
   container.innerHTML = "";
+
+  if (!data.results) {
+    console.error("Error fetching posts:", data);
+    container.innerHTML = "<p>Failed to load posts. Check console for errors.</p>";
+    return;
+  }
+
   data.results.forEach(page => {
     const p = page.properties;
     const title = p.Title?.title?.[0]?.plain_text || "No Title";
@@ -116,7 +123,6 @@ async function fetchListings() {
     container.appendChild(card);
   });
 }
-
 
 async function submitPost(e) {
   e.preventDefault();
@@ -180,15 +186,12 @@ async function submitPost(e) {
   }
 }
 
-populateTags();
-fetchListings();
-  const data = await res.json();
-if (!data.results) {
-  console.error("Error fetching posts:", data);
-  container.innerHTML = "<p>Failed to load posts. Check console for errors.</p>";
-  return;
+async function init() {
+  populateTags();
+  await fetchListings();
 }
 
+init();
 </script>
 </body>
 </html>
