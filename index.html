@@ -98,14 +98,12 @@ async function fetchListings() {
       "Authorization": `Bearer ${notionToken}`,
       "Content-Type": "application/json",
       "Notion-Version": "2022-06-28"
-    }
-    // removed the body filter
+    },
+    body: JSON.stringify({ filter: { property: "Status", select: { equals: "Active" }}})
   });
-
   const data = await res.json();
   const container = document.getElementById("listings");
   container.innerHTML = "";
-
   data.results.forEach(page => {
     const p = page.properties;
     const title = p.Title?.title?.[0]?.plain_text || "No Title";
