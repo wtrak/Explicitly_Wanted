@@ -182,6 +182,13 @@ async function submitPost(e) {
 
 populateTags();
 fetchListings();
+  const data = await res.json();
+if (!data.results) {
+  console.error("Error fetching posts:", data);
+  container.innerHTML = "<p>Failed to load posts. Check console for errors.</p>";
+  return;
+}
+
 </script>
 </body>
 </html>
