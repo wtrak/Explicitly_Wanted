@@ -1,10 +1,56 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Classified Listings</title>
+  <title>Classifieds Board</title>
+  <style>
+    body { font-family: Arial; padding: 20px; background: #f9f9f9; }
+    .card { background: #fff; padding: 15px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 5px; }
+    .tags { margin-top: 10px; }
+    .tag { display: inline-block; background: #eee; padding: 5px 10px; margin: 3px; border-radius: 3px; font-size: 12px; }
+  </style>
 </head>
 <body>
   <h1>Live Wanted Posts</h1>
-  <p>This page will display all Active posts from your Notion DB. Coming next...</p>
+  <div id="listings">Loading posts...</div>
+
+  <script>
+    async function fetchListings() {
+      const response = await fetch("https://api.notion.com/v1/databases/22c5d91a97a78073995ce60206b0da08/query", {
+        method: "POST",
+        headers: {
+          "Authorization": "Bearer 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",
+          "Content-Type": "application/json",
+          "Notion-Version": "2022-06-28"
+        },
+        body: JSON.stringify({
+          "filter": {
+            "property": "Status",
+            "select": {
+              "equals": "Active"
+            }
+          }
+        })
+      });
+
+      const data = await response.json();
+      const container = document.getElementById("listings");
+      container.innerHTML = "";
+
+      data.results.forEach(page => {
+        const props = page.properties;
+        const title = props.Title?.title[0]?.plain_text || "No Title";
+        const desc = props.Description?.rich_text[0]?.plain_text || "No Description";
+        const budget = props.Budget?.number ? `$${props.Budget.number}` : "No Budget";
+        const tags = props.Tags?.multi_select?.map(t => `<span class='tag'>${t.name}</span>`).join("") || "";
+
+        const card = document.createElement("div");
+        card.className = "card";
+        card.innerHTML = `<strong>${title}</strong><br><small>${budget}</small><p>${desc}</p><div class="tags">${tags}</div>`;
+        container.appendChild(card);
+      });
+    }
+
+    fetchListings();
+  </script>
 </body>
 </html>
